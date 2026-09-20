@@ -1,0 +1,12 @@
+[
+  {
+    "relation": ["delegate_permission/common.handle_all_urls"],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "io.github.app_917813_habits.twa",
+      "sha256_cert_fingerprints": [
+        "9A:55:B3:9D:A6:69:C6:0C:14:2B:07:71:70:FA:0C:23:D7:D6:5D:1D:9C:92:38:92:0B:8B:CC:E0:3A:88:3D:A5"
+      ]
+    }
+  }
+]
