@@ -1,7 +1,7 @@
 const STORAGE_KEY = "daily-habits:v1";
 const MAX_HABIT_LENGTH = 30;
 const MAX_NOTE_LENGTH = 300;
-const SUGGESTIONS = ["喝水", "运动", "读书"];
+const SUGGESTIONS = ["喝水", "运动", "读书", "背单词", "练枪"];
 const WEEKDAYS = ["日", "一", "二", "三", "四", "五", "六"];
 const PALETTE = [
   "#2563d9",
