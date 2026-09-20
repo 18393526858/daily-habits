@@ -1,0 +1,240 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="一个简洁的每日习惯打卡工具。"
+    />
+    <title>每日习惯</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="page-shell">
+      <header class="topbar">
+        <a class="brand" href="#" aria-label="每日习惯首页">
+          <span class="brand-mark" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none">
+              <path d="m5 12 4 4L19 6" />
+            </svg>
+          </span>
+          <span>每日习惯</span>
+        </a>
+        <div class="topbar-actions">
+          <p class="today" id="todayLabel"></p>
+          <button
+            class="header-icon-button"
+            id="exportButton"
+            type="button"
+            aria-label="导出数据备份"
+            title="导出数据备份"
+          >
+            <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <path d="M12 3v12" />
+              <path d="m7 10 5 5 5-5" />
+              <path d="M5 21h14" />
+            </svg>
+          </button>
+          <button
+            class="header-icon-button"
+            id="importButton"
+            type="button"
+            aria-label="导入数据备份"
+            title="导入数据备份"
+          >
+            <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <path d="M12 16V4" />
+              <path d="m7 9 5-5 5 5" />
+              <path d="M5 21h14" />
+            </svg>
+          </button>
+          <input
+            class="sr-only"
+            id="importInput"
+            type="file"
+            accept="application/json,.json"
+            tabindex="-1"
+          />
+        </div>
+      </header>
+
+      <main>
+        <section class="summary" aria-labelledby="summaryTitle">
+          <div class="summary-copy">
+            <p class="eyebrow" id="summaryTitle">今日进度</p>
+            <p class="summary-count" aria-live="polite" id="completionCount">
+              完成 <strong>0</strong> / <span>0</span> 项
+            </p>
+          </div>
+          <div class="progress-wrap">
+            <div
+              class="progress-track"
+              role="progressbar"
+              aria-label="今日完成进度"
+              aria-valuemin="0"
+              aria-valuemax="0"
+              aria-valuenow="0"
+              id="progressBar"
+            >
+              <span class="progress-value" id="progressValue"></span>
+            </div>
+            <span class="progress-label" id="progressLabel">0%</span>
+          </div>
+        </section>
+
+        <section class="stats-strip" aria-label="打卡统计">
+          <article class="stat-item">
+            <p>当前连续</p>
+            <strong id="currentStreak">0</strong>
+            <span>天</span>
+          </article>
+          <article class="stat-item">
+            <p>近 7 天完成率</p>
+            <strong id="weekRate">0%</strong>
+          </article>
+          <article class="stat-item">
+            <p>累计打卡</p>
+            <strong id="totalCheckins">0</strong>
+            <span>次</span>
+          </article>
+        </section>
+
+        <div class="content-grid">
+          <aside class="add-column" aria-labelledby="addTitle">
+            <div class="section-heading">
+              <div>
+                <p class="eyebrow">开始坚持</p>
+                <h2 id="addTitle">添加习惯</h2>
+              </div>
+            </div>
+
+            <form class="habit-form" id="habitForm" novalidate>
+              <label class="sr-only" for="habitInput">习惯名称</label>
+              <div class="input-row">
+                <input
+                  id="habitInput"
+                  name="habit"
+                  type="text"
+                  maxlength="30"
+                  autocomplete="off"
+                  placeholder="例如：早睡"
+                  aria-describedby="formMessage characterCount"
+                />
+                <button class="add-button" type="submit" aria-label="添加习惯">
+                  <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                    <path d="M12 5v14M5 12h14" />
+                  </svg>
+                </button>
+              </div>
+              <div class="form-meta">
+                <p class="form-message" id="formMessage" aria-live="polite"></p>
+                <span class="character-count" id="characterCount">0 / 30</span>
+              </div>
+            </form>
+
+            <div class="suggestions" id="suggestions">
+              <p class="suggestions-title">可以试试</p>
+              <div class="suggestion-list" id="suggestionList"></div>
+            </div>
+          </aside>
+
+          <section class="list-column" aria-labelledby="habitsTitle">
+            <div class="section-heading list-heading">
+              <div>
+                <p class="eyebrow">今天的清单</p>
+                <h2 id="habitsTitle">我的习惯</h2>
+              </div>
+              <span class="habit-total" id="habitTotal">0 项</span>
+            </div>
+
+            <p class="app-message" id="appMessage" role="status" hidden></p>
+
+            <div class="empty-state" id="emptyState" hidden>
+              <span class="empty-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none">
+                  <path d="M9 11l3 3L22 4" />
+                  <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11" />
+                </svg>
+              </span>
+              <h3>还没有习惯</h3>
+              <p>从一个简单的目标开始，今天就走一步。</p>
+            </div>
+
+            <ul class="habit-list" id="habitList"></ul>
+          </section>
+        </div>
+
+        <section class="history-section" aria-labelledby="historyTitle">
+          <div class="history-heading">
+            <div>
+              <p class="eyebrow">回看每一天</p>
+              <h2 id="historyTitle">历史记录</h2>
+            </div>
+            <div class="month-controls">
+              <button
+                class="month-button"
+                id="previousMonth"
+                type="button"
+                aria-label="上个月"
+                title="上个月"
+              >
+                <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                  <path d="m15 18-6-6 6-6" />
+                </svg>
+              </button>
+              <strong id="monthLabel"></strong>
+              <button
+                class="month-button"
+                id="nextMonth"
+                type="button"
+                aria-label="下个月"
+                title="下个月"
+              >
+                <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                  <path d="m9 18 6-6-6-6" />
+                </svg>
+              </button>
+            </div>
+          </div>
+
+          <div class="history-layout">
+            <div class="calendar">
+              <div class="calendar-weekdays" aria-hidden="true">
+                <span>一</span>
+                <span>二</span>
+                <span>三</span>
+                <span>四</span>
+                <span>五</span>
+                <span>六</span>
+                <span>日</span>
+              </div>
+              <div class="calendar-grid" id="calendarGrid"></div>
+              <div class="calendar-legend" aria-hidden="true">
+                <span><i class="legend-dot is-complete"></i>全部完成</span>
+                <span><i class="legend-dot is-partial"></i>部分完成</span>
+                <span><i class="legend-dot is-missed"></i>未完成</span>
+              </div>
+            </div>
+
+            <article class="day-detail" aria-labelledby="dayDetailTitle">
+              <header class="day-detail-header">
+                <div>
+                  <p class="eyebrow" id="dayDetailLabel">当日详情</p>
+                  <h3 id="dayDetailTitle">今天</h3>
+                </div>
+                <span class="day-detail-count" id="dayDetailCount">0 / 0</span>
+              </header>
+              <ul class="day-detail-list" id="dayDetailList"></ul>
+              <p class="day-detail-empty" id="dayDetailEmpty" hidden>
+                这一天还没有打卡记录。
+              </p>
+            </article>
+          </div>
+        </section>
+      </main>
+    </div>
+
+    <script src="app.js"></script>
+  </body>
+</html>
