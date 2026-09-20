@@ -11,6 +11,26 @@ const PALETTE = [
   "#7c5bd6",
   "#168a9c",
 ];
+const SEED_HABITS = [
+  {
+    id: "seed-vocabulary",
+    name: "背单词",
+    color: PALETTE[3],
+    createdAt: 1758352800000,
+  },
+  {
+    id: "seed-aim-training",
+    name: "练枪",
+    color: PALETTE[2],
+    createdAt: 1758352800001,
+  },
+  {
+    id: "seed-valorant",
+    name: "打瓦",
+    color: PALETTE[4],
+    createdAt: 1758352800002,
+  },
+];
 const VIEWS = ["today", "history", "insights", "settings"];
 
 const elements = {
@@ -125,14 +145,15 @@ function formatMonth(date) {
 
 function createEmptyState() {
   return {
-    version: 3,
+    version: 4,
     today: getLocalDateKey(),
-    habits: [],
+    habits: SEED_HABITS.map((habit) => ({ ...habit })),
     completedIds: [],
     history: {},
     notes: {},
     settings: {
       theme: "system",
+      seededDefaults: true,
     },
   };
 }
@@ -274,15 +295,24 @@ function normalizeState(value) {
   const theme = ["system", "light", "dark"].includes(value.settings?.theme)
     ? value.settings.theme
     : "system";
+  const seededDefaults = Boolean(value.settings?.seededDefaults);
+
+  if (!seededDefaults) {
+    SEED_HABITS.forEach((seedHabit) => {
+      if (!habits.some((habit) => namesMatch(habit.name, seedHabit.name))) {
+        habits.push({ ...seedHabit });
+      }
+    });
+  }
 
   return {
-    version: 3,
+    version: 4,
     today: isValidDateKey(value.today) ? value.today : getLocalDateKey(),
     habits,
     completedIds,
     history: normalizeHistory(value.history),
     notes: normalizeNotes(value.notes),
-    settings: { theme },
+    settings: { theme, seededDefaults: true },
   };
 }
 
@@ -1625,7 +1655,10 @@ document.addEventListener("visibilitychange", () => {
 });
 
 if ("serviceWorker" in navigator && location.protocol.startsWith("http")) {
-  navigator.serviceWorker.register("./sw.js").catch(() => {});
+  navigator.serviceWorker
+    .register("./sw.js", { updateViaCache: "none" })
+    .then((registration) => registration.update())
+    .catch(() => {});
 }
 
 updateCharacterCount();

@@ -1,4 +1,4 @@
-const CACHE_NAME = "daily-habits-v3";
+const CACHE_NAME = "daily-habits-v5";
 const APP_SHELL = [
   "./",
   "./index.html",
@@ -50,13 +50,33 @@ self.addEventListener("fetch", (event) => {
     return;
   }
 
+  const requestUrl = new URL(event.request.url);
+  const shouldRefresh =
+    requestUrl.origin === location.origin &&
+    /\.(?:css|js|webmanifest)$/.test(requestUrl.pathname);
+
+  if (shouldRefresh) {
+    event.respondWith(
+      fetch(event.request)
+        .then((response) => {
+          if (response.ok) {
+            const copy = response.clone();
+            caches.open(CACHE_NAME).then((cache) => cache.put(event.request, copy));
+          }
+          return response;
+        })
+        .catch(() => caches.match(event.request)),
+    );
+    return;
+  }
+
   event.respondWith(
     caches.match(event.request).then((cached) => {
       if (cached) {
         return cached;
       }
       return fetch(event.request).then((response) => {
-        if (response.ok && new URL(event.request.url).origin === location.origin) {
+        if (response.ok && requestUrl.origin === location.origin) {
           const copy = response.clone();
           caches.open(CACHE_NAME).then((cache) => cache.put(event.request, copy));
         }
